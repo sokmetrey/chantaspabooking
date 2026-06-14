@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chanta Spa - Premium Booking & Management System</title>
+    <link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Hidden input for custom logo upload -->
+        <input type="file" id="sidebar-logo-input" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand-container">
+                <div class="brand-logo-circle" id="brand-logo-container" onclick="triggerLogoUpload()" title="Click to change logo">
+                    <span class="brand-logo-text">Logo</span>
+                </div>
+            </div>
+            <div class="brand-divider"></div>
+            
+            <nav class="nav-menu">
+                <li class="nav-item active" id="nav-dashboard" onclick="switchView('dashboard')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                    </svg>
+                    <span data-i18n="menu_dashboard">Dashboard</span>
+                </li>
+                <li class="nav-item" id="nav-rooms" onclick="switchView('rooms')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                    <span data-i18n="menu_rooms">Rooms View</span>
+                </li>
+                <li class="nav-item" id="nav-therapists" onclick="switchView('therapists')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    <span data-i18n="menu_therapists">Therapists View</span>
+                </li>
+                <li class="nav-item" id="nav-grid" onclick="switchView('grid')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+                    </svg>
+                    <span data-i18n="menu_grid">Booking Grid</span>
+                </li>
+                <li class="nav-item" id="nav-reports" onclick="switchView('reports')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.625C7.5 19.371 6.996 19.5 6.375 19.5h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v10.125c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.625c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                    </svg>
+                    <span data-i18n="menu_reports">Reports</span>
+                </li>
+                <li class="nav-item" id="nav-settings" onclick="switchView('settings')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span data-i18n="menu_settings">Settings</span>
+                </li>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="lang-selector">
+                    <button class="lang-btn active" id="lang-en" onclick="setLanguage('en')">EN</button>
+                    <button class="lang-btn" id="lang-kh" onclick="setLanguage('kh')">ខ្មែរ</button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="page-title" id="current-view-title" data-i18n="title_dashboard">Dashboard Overview</div>
+                <div class="header-actions">
+                    <!-- Theme Toggle Switch -->
+                    <button class="btn btn-secondary" id="theme-toggle" onclick="toggleTheme()" style="padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;" title="Toggle Day/Night mode">
+                        <!-- Sun Icon for Light mode -->
+                        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px; display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21M4.93 4.93l1.58 1.58m9.75 9.75l1.58 1.58M3 12h2.25m13.5 0H21M4.93 19.07l1.58-1.58m9.75-9.75l1.58-1.58M12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" />
+                        </svg>
+                        <!-- Moon Icon for Dark mode -->
+                        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px; display: block;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                        </svg>
+                    </button>
+                    <div class="date-indicator" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; cursor: pointer;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px; color: var(--text-secondary);">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                        <input type="date" id="global-date-picker" style="border: none; background: transparent; color: inherit; font-family: inherit; font-size: 0.9rem; font-weight: 500; outline: none; cursor: pointer;" onchange="handleGlobalDateChange(this.value)">
+                    </div>
+                    <button class="btn btn-primary" onclick="openBookingModal()" id="btn-new-booking">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span data-i18n="btn_new_booking">New Booking</span>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Dashboard View -->
+            <section class="view-panel active" id="view-dashboard">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label" data-i18n="stat_total_bookings">Total Bookings</div>
+                            <div class="stat-value" id="stat-bookings-count">0</div>
+                        </div>
+                        <div class="stat-icon gold">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label" data-i18n="stat_active_bookings">Active / Checked In</div>
+                            <div class="stat-value" id="stat-active-count">0</div>
+                        </div>
+                        <div class="stat-icon success">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label" data-i18n="stat_room_utilization">Room Occupancy</div>
+                            <div class="stat-value" id="stat-occupancy-rate">0%</div>
+                        </div>
+                        <div class="stat-icon info">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 6.205 3 1m1.5-1.5-3-1m-3.182-3.182 1.5-.545m-1.5.545-1.5.545" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <div class="stat-label" data-i18n="stat_estimated_revenue">Estimated Revenue</div>
+                            <div class="stat-value" id="stat-revenue-total">$0</div>
+                        </div>
+                        <div class="stat-icon warning">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 24px; height: 24px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-sections">
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <div class="card-panel-title" data-i18n="dash_top_services">Top Service Types</div>
+                        </div>
+                        <div class="chart-container" id="services-bar-chart">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <div class="card-panel-title" data-i18n="dash_channels_demographics">Channels & Demographics</div>
+                        </div>
+                        <div class="analytics-list" id="demographics-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <div class="card-panel-title" data-i18n="dash_therapist_hours">Minutes & Hours by Therapist</div>
+                        </div>
+                        <div class="analytics-list" id="therapist-hours-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <div class="card-panel-title" data-i18n="dash_therapist_services">Services by Therapist</div>
+                        </div>
+                        <div class="analytics-list" id="therapist-services-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Rooms View Section -->
+            <section class="view-panel" id="view-rooms">
+                <div class="timeline-controls" style="flex-wrap: wrap; gap: 12px;">
+                    <!-- Date Picker inside the Timeline controls -->
+                    <div style="display: flex; align-items: center; gap: 8px; background-color: var(--bg-primary); padding: 6px 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                        <input type="date" id="rooms-date-picker" style="border: none; background: transparent; color: inherit; font-family: inherit; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer;" onchange="handleGlobalDateChange(this.value)">
+                    </div>
+
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: var(--accent-gold-light); border: 1px solid var(--accent-gold); border-radius: 3px;"></span>
+                        <span data-i18n="sched_legend_occupied">Occupied Time Blocks</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-wrapper">
+                    <div class="timeline-grid" id="rooms-timeline-grid">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Therapist View Section -->
+            <section class="view-panel" id="view-therapists">
+                <div class="timeline-controls" style="flex-wrap: wrap; gap: 12px;">
+                    <!-- Date Picker inside the Timeline controls -->
+                    <div style="display: flex; align-items: center; gap: 8px; background-color: var(--bg-primary); padding: 6px 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                        </svg>
+                        <input type="date" id="therapists-date-picker" style="border: none; background: transparent; color: inherit; font-family: inherit; font-size: 0.85rem; font-weight: 600; outline: none; cursor: pointer;" onchange="handleGlobalDateChange(this.value)">
+                    </div>
+
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; margin-left: auto;">
+                        <span style="display: inline-block; width: 12px; height: 12px; background: var(--accent-gold-light); border: 1px solid var(--accent-gold); border-radius: 3px;"></span>
+                        <span data-i18n="sched_legend_occupied">Occupied Time Blocks</span>
+                    </div>
+                </div>
+                
+                <div class="timeline-wrapper">
+                    <div class="timeline-grid" id="therapists-timeline-grid">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Booking Grid View -->
+            <section class="view-panel" id="view-grid">
+                <div class="table-title-container" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <h2 id="grid-table-title" style="font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin: 0; cursor: pointer; display: inline-block; transition: color 0.2s;" onclick="editTableTitle()" title="Click to edit title">Booking Log Spreadsheet</h2>
+                    <button class="action-icon-btn" onclick="editTableTitle()" title="Edit Table Title" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; padding: 4px; border-radius: 4px; transition: background 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 16px; height: 16px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="control-bar">
+                    <div class="search-filter-group">
+                        <div class="search-input-wrapper">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+                            </svg>
+                            <input type="text" id="grid-search" class="input-field" placeholder="Search by name, phone..." oninput="applyGridFilters()">
+                        </div>
+                        <select id="filter-room" class="select-filter" onchange="applyGridFilters()">
+                            <option value="" data-i18n="filter_all_rooms">All Rooms</option>
+                        </select>
+                        <select id="filter-staff" class="select-filter" onchange="applyGridFilters()">
+                            <option value="" data-i18n="filter_all_staff">All Staff</option>
+                        </select>
+                        <select id="filter-payment" class="select-filter" onchange="applyGridFilters()">
+                            <option value="" data-i18n="filter_all_payments">All Payments</option>
+                            <option value="already pay" data-i18n="pay_already_pay">already pay</option>
+                            <option value="yes" data-i18n="pay_yes">yes</option>
+                            <option value="unpaid" data-i18n="pay_unpaid">unpaid</option>
+                        </select>
+                        <select id="filter-date-range" class="select-filter" onchange="toggleCustomDateInputs(); applyGridFilters();">
+                            <option value="all" data-i18n="filter_all_time">All Time</option>
+                            <option value="today" data-i18n="filter_today">Today</option>
+                            <option value="yesterday" data-i18n="filter_yesterday">Yesterday</option>
+                            <option value="week" data-i18n="filter_this_week">This Week</option>
+                            <option value="month" data-i18n="filter_this_month">This Month</option>
+                            <option value="last_month" data-i18n="filter_last_month">Last Month</option>
+                            <option value="custom" data-i18n="filter_custom_period">Custom Period</option>
+                        </select>
+                        <div id="custom-date-inputs" style="display: none;">
+                            <input type="date" id="filter-start-date" class="input-field filter-date-input" onchange="applyGridFilters()">
+                            <span class="date-range-separator" data-i18n="date_range_to">to</span>
+                            <input type="date" id="filter-end-date" class="input-field filter-date-input" onchange="applyGridFilters()">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn btn-secondary" onclick="exportToCSV()" title="Export to Excel CSV">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            <span data-i18n="btn_export">Export</span>
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('csv-import-file').click()" title="Import from CSV">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                            </svg>
+                            <span data-i18n="btn_import">Import</span>
+                        </button>
+                        <input type="file" id="csv-import-file" style="display: none;" accept=".csv" onchange="importFromCSV(event)">
+                    </div>
+                </div>
+                
+                <!-- Interactive Drag and Drop Reordering Tip -->
+                <div class="grid-tip-wrapper" style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; background-color: var(--bg-secondary); padding: 8px 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); width: fit-content;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 15px; height: 15px; color: var(--brand-rust); flex-shrink: 0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 1.056 1.056L12 12.75l-.247-.02a.75.75 0 1 1 1.056-1.056l.041.02zM12 18.75a6.75 6.75 0 1 0 0-13.5 6.75 6.75 0 0 0 0 13.5z" />
+                    </svg>
+                    <span data-i18n="grid_drag_tip">Tip: Drag and drop column headers to reorder columns. Order is saved automatically.</span>
+                </div>
+                
+                <div class="table-container">
+                    <table class="spa-table" id="booking-table">
+                        <thead id="booking-table-head">
+                            <!-- Populated dynamically by JS -->
+                        </thead>
+                        <tbody id="booking-table-body">
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Settings View -->
+            <section class="view-panel" id="view-settings">
+                <div class="settings-container">
+                    <div class="settings-menu">
+                        <div class="settings-menu-item active" id="set-menu-rooms" onclick="switchSettingsTab('rooms')" data-i18n="set_tab_rooms">Rooms Setup</div>
+                        <div class="settings-menu-item" id="set-menu-staff" onclick="switchSettingsTab('staff')" data-i18n="set_tab_staff">Therapists / Staff</div>
+                        <div class="settings-menu-item" id="set-menu-services" onclick="switchSettingsTab('services')" data-i18n="set_tab_services">Services Directory</div>
+                        <div class="settings-menu-item" id="set-menu-payments" onclick="switchSettingsTab('payments')" data-i18n="set_tab_payments">Payment Statuses</div>
+                        <div class="settings-menu-item" id="set-menu-clientStatuses" onclick="switchSettingsTab('clientStatuses')" data-i18n="set_tab_clientStatuses">Client Status Setup</div>
+                        <div class="settings-menu-item" id="set-menu-discounts" onclick="switchSettingsTab('discounts')" data-i18n="set_tab_discounts">Discount Options</div>
+                        <div class="settings-menu-item" id="set-menu-bookingStatuses" onclick="switchSettingsTab('bookingStatuses')" data-i18n="set_tab_bookingStatuses">Booking Status Setup</div>
+                        <div class="settings-menu-item" id="set-menu-channels" onclick="switchSettingsTab('channels')" data-i18n="set_tab_channels">Booking Channels</div>
+                        <div class="settings-menu-item" id="set-menu-data" onclick="switchSettingsTab('data')" data-i18n="set_tab_data">Database & Backups</div>
+                        <div class="settings-menu-item" id="set-menu-brand" onclick="switchSettingsTab('brand')" data-i18n="set_tab_brand">Logo & Branding</div>
+                    </div>
+                    
+                    <div class="settings-content-card">
+                        <!-- Rooms Tab -->
+                        <div class="settings-tab-panel active" id="settings-tab-rooms">
+                            <h3 class="settings-title" data-i18n="set_rooms_title">Rooms Configuration</h3>
+                            <p class="settings-description" data-i18n="set_rooms_desc">Define rooms, massage beds, or areas for booking assignments.</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="col_room">Room</th>
+                                            <th style="text-align: right; padding-right: 24px;" data-i18n="col_beds">Beds</th>
+                                            <th style="text-align: right; padding-right: 24px;" data-i18n="col_steam">Steam</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rooms-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'rooms')" style="gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="new-room-name" class="input-field" placeholder="e.g. Room 15" required style="flex-grow: 2; min-width: 120px;">
+                                <input type="number" id="new-room-beds" class="input-field" placeholder="Beds" data-i18n="form_beds_placeholder" min="1" required style="width: 100px; flex-shrink: 0;" value="1">
+                                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); white-space: nowrap; margin: 0 10px;">
+                                    <input type="checkbox" id="new-room-steam" style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--brand-rust);">
+                                    <span data-i18n="form_steam_label">Has Steam</span>
+                                </label>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Staff Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-staff">
+                            <h3 class="settings-title" data-i18n="set_staff_title">Therapist Directory</h3>
+                            <p class="settings-description" data-i18n="set_staff_desc">Manage spa therapists.</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_staff_col_name">Therapist Name</th>
+                                            <th style="text-align: right; padding-right: 48px;" data-i18n="set_staff_col_start_date">Started Working Date</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="staff-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'staff')" style="gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <input type="text" id="new-staff-name" class="input-field" placeholder="e.g. Bunya" required style="flex-grow: 2; min-width: 120px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                    <span style="font-size: 0.85rem; color: var(--text-secondary);" data-i18n="form_start_date_label">Start Date:</span>
+                                    <input type="date" id="new-staff-start-date" class="input-field filter-date-input" required style="width: 150px; padding: 6px 12px; height: 38px;">
+                                </div>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Services Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-services">
+                            <h3 class="settings-title" data-i18n="set_services_title">Spa Services</h3>
+                            <p class="settings-description" data-i18n="set_services_desc">Configure massage types, standard durations, and base prices.</p>
+                            
+                            <div class="config-list" id="services-config-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addServiceItem(event)" style="flex-direction: column; gap: 10px;">
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="text" id="new-service-name" class="input-field" placeholder="Service Name (e.g. Herbal oil massage)" required style="flex-grow: 2;">
+                                    <input type="number" id="new-service-duration" class="input-field" placeholder="Duration (Minutes)" required style="flex-grow: 1;">
+                                    <input type="number" id="new-service-price" class="input-field" placeholder="Price $" required style="flex-grow: 1;">
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="align-self: flex-end;" data-i18n="btn_add">Add Service</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Data Management Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-data">
+                            <h3 class="settings-title" data-i18n="set_data_title">System Diagnostics & Data Controls</h3>
+                            <p class="settings-description" data-i18n="set_data_desc">Backup the system, restore to defaults, or load synthetic sample data.</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <h4 style="font-weight: 600; margin-bottom: 4px;" data-i18n="set_data_demo_title">Preload Demo Bookings</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="set_data_demo_desc">Loads bookings corresponding to the sample spreadsheet sheet.</p>
+                                    </div>
+                                    <button class="btn btn-secondary" onclick="loadDemoDataset()" data-i18n="btn_load_demo">Load Demo Data</button>
+                                </div>
+                                
+                                <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <h4 style="font-weight: 600; margin-bottom: 4px; color: var(--color-danger);" data-i18n="set_data_reset_title">Clear Database</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="set_data_reset_desc">Delete all custom bookings, rooms, and staff records.</p>
+                                    </div>
+                                    <button class="btn btn-danger" onclick="resetSystemDatabase()" data-i18n="btn_reset_all">Reset System</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Branding Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-brand">
+                            <h3 class="settings-title" data-i18n="set_brand_title">Logo & Branding</h3>
+                            <p class="settings-description" data-i18n="set_brand_desc">Upload and manage your custom spa logo. Persistent in browser storage.</p>
+                            
+                            <div class="brand-settings-container" style="display: flex; flex-direction: column; gap: 20px;">
+                                <!-- Preview block -->
+                                <div style="background-color: var(--bg-tertiary); padding: 20px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); display: flex; align-items: center; gap: 24px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                        <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);" data-i18n="set_brand_logo_preview">Logo Preview</div>
+                                        <div id="brand-logo-preview-box" style="width: 80px; height: 80px; border-radius: var(--border-radius-md); background-color: var(--bg-primary); border: 1px dashed var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 4px;">
+                                            <!-- Preview content populated dynamically -->
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 10px; flex-grow: 1;">
+                                        <div style="display: flex; gap: 10px;">
+                                            <button class="btn btn-primary" onclick="triggerLogoUpload()" data-i18n="set_brand_upload_btn">Upload Custom Logo</button>
+                                            <button class="btn btn-secondary" onclick="resetToDefaultLogo()" data-i18n="set_brand_reset_btn" id="btn-reset-logo" style="display: none;">Reset to Default</button>
+                                        </div>
+                                        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;" data-i18n="set_brand_sidebar_logo_tip">Tip: Click the logo in the top-left sidebar to quickly upload a new one!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payments Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-payments">
+                            <h3 class="settings-title" data-i18n="set_payments_title">Payment Statuses</h3>
+                            <p class="settings-description" data-i18n="set_payments_desc">Manage standard payment status indicators (e.g. unpaid, already pay).</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_payments_col_name">Payment Status</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="payments-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'payments')">
+                                <input type="text" id="new-payment-name" class="input-field" placeholder="e.g. already pay" data-i18n="set_payments_placeholder" required>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Client Statuses Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-clientStatuses">
+                            <h3 class="settings-title" data-i18n="set_client_statuses_title">Client Status Setup</h3>
+                            <p class="settings-description" data-i18n="set_client_statuses_desc">Manage client type categorization options (e.g. old, new).</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_client_statuses_col_name">Client Status</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="clientStatuses-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'clientStatuses')">
+                                <input type="text" id="new-clientStatus-name" class="input-field" placeholder="e.g. old (returning client)" data-i18n="set_client_statuses_placeholder" required>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+
+                        <!-- Discounts Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-discounts">
+                            <h3 class="settings-title" data-i18n="set_discounts_title">Discount Options</h3>
+                            <p class="settings-description" data-i18n="set_discounts_desc">Define standard discount rates (e.g. 0%, 10%).</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_discounts_col_name">Discount Option</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="discounts-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'discounts')">
+                                <input type="text" id="new-discount-name" class="input-field" placeholder="e.g. 15%" data-i18n="set_discounts_placeholder" required>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+
+                        <!-- Booking Statuses Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-bookingStatuses">
+                            <h3 class="settings-title" data-i18n="set_bookingStatuses_title">Booking Status Setup</h3>
+                            <p class="settings-description" data-i18n="set_bookingStatuses_desc">Manage options for booking status column badges and row highlighting.</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_booking_status_col_name">Status Option</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bookingStatuses-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'bookingStatuses')">
+                                <input type="text" id="new-bookingStatus-name" class="input-field" placeholder="e.g. Confirm" data-i18n="set_bookingStatuses_placeholder" required>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+
+                        <!-- Booking Channels Tab -->
+                        <div class="settings-tab-panel" id="settings-tab-channels">
+                            <h3 class="settings-title" data-i18n="set_channels_title">Booking Channels</h3>
+                            <p class="settings-description" data-i18n="set_channels_desc">Manage options for booking channel origins (e.g. Telegram, walk in).</p>
+                            
+                            <div class="table-container" style="margin-bottom: 20px;">
+                                <table class="spa-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left;" data-i18n="set_channels_col_name">Booking Channel</th>
+                                            <th style="text-align: center; width: 140px;" data-i18n="set_staff_col_actions">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="channels-config-list">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <form class="config-form" onsubmit="addConfigItem(event, 'channels')">
+                                <input type="text" id="new-channel-name" class="input-field" placeholder="e.g. Telegram" data-i18n="set_channels_placeholder" required>
+                                <button type="submit" class="btn btn-primary" data-i18n="btn_add">Add</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Reports View -->
+            <section class="view-panel" id="view-reports">
+                <div class="card-panel">
+                    <div class="card-panel-header" style="flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <h3 class="card-panel-title" data-i18n="title_reports">Booking & Analytical Reports</h3>
+                    </div>
+                    
+                    <div class="report-controls" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; align-items: flex-end; background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
+                        <div style="display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);" data-i18n="menu_reports">Reports</label>
+                            <select id="report-type" class="select-filter" style="width: 100%; height: 38px; padding: 6px 12px; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); color: var(--text-primary); outline: none;">
+                                <option value="" data-i18n="report_select_placeholder">-- Select a Report --</option>
+                                <option value="revenue" data-i18n="report_type_revenue">Revenue & Sales Report</option>
+                                <option value="therapist" data-i18n="report_type_therapist">Therapist Performance & Utilization</option>
+                                <option value="room" data-i18n="report_type_occupancy">Room Occupancy & Utilization</option>
+                                <option value="demographics" data-i18n="report_type_demographics">Customer Demographics & Booking Channels</option>
+                                <option value="cancellation" data-i18n="report_type_cancellations">Cancellation Report</option>
+                                <option value="unavailability" data-i18n="report_type_unavailability">Service Unavailability Report</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 6px; width: 160px;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);" data-i18n="report_date_start">Start Date:</label>
+                            <input type="date" id="report-start-date" class="input-field filter-date-input" style="width: 100%; height: 38px; padding: 6px 12px;">
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 6px; width: 160px;">
+                            <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);" data-i18n="report_date_end">End Date:</label>
+                            <input type="date" id="report-end-date" class="input-field filter-date-input" style="width: 100%; height: 38px; padding: 6px 12px;">
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="triggerReportGeneration()" style="height: 38px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="width: 18px; height: 18px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                            <span data-i18n="report_btn_generate">Generate Report</span>
+                        </button>
+                    </div>
+                    
+                    <div id="report-results-container">
+                        <div class="report-empty-state" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 64px; height: 64px; margin: 0 auto 16px; color: var(--text-muted); opacity: 0.5;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
+                            <p style="font-weight: 500; font-size: 1.1rem; margin-bottom: 4px;" data-i18n="report_select_placeholder">-- Select a Report --</p>
+                            <p style="font-size: 0.85rem;" data-i18n="report_empty_tip">Choose a report type and date range, then click "Generate Report".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Add/Edit Booking Modal -->
+    <div class="modal-overlay" id="booking-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title" id="modal-booking-title" data-i18n="modal_booking_title_add">Create New Appointment</div>
+                <button class="modal-close-btn" onclick="closeBookingModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Conflict banner -->
+                <div class="conflict-banner" id="conflict-banner">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px; flex-shrink:0;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <span id="conflict-message">Warning: Conflict detected!</span>
+                </div>
+                
+                <form id="booking-form" onsubmit="saveBooking(event)">
+                    <input type="hidden" id="booking-id">
+                    <input type="checkbox" id="book-is-block" style="display: none;">
+                    
+                    <div class="form-grid">
+
+                        <!-- Basic Info / Block Reason -->
+                        <div class="form-group">
+                            <label class="form-label" for="book-client-name" id="label-client-name"><span data-i18n="form_client_name">Client Name</span> <span class="required-asterisk">*</span></label>
+                            <input type="text" id="book-client-name" class="input-field" placeholder="e.g. Yath Sovan Ney or walk in" required>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-phone" data-i18n="form_phone">Phone Number</label>
+                            <input type="text" id="book-phone" class="input-field" placeholder="e.g. 017 493 803">
+                        </div>
+                        
+                        <!-- Demographics -->
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-gender"><span data-i18n="form_gender">Gender</span></label>
+                            <select id="book-gender" class="select-filter input-field">
+                                <option value="F">Female (F)</option>
+                                <option value="M">Male (M)</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-nationality"><span data-i18n="form_nationality">Nationality</span></label>
+                            <select id="book-nationality" class="select-filter input-field">
+                                <option value="ខ្មែរ">Khmer (ខ្មែរ)</option>
+                                <option value="ចិន">Chinese (ចិន)</option>
+                                <option value="បរទេស">Foreigner / Other (បរទេស)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Guest details -->
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-guest-type"><span data-i18n="form_guest_type">Guest Type</span></label>
+                            <select id="book-guest-type" class="select-filter input-field">
+                                <option value="Normal">Normal</option>
+                                <option value="VIP">VIP</option>
+                                <option value="Member">Member</option>
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-channel"><span data-i18n="form_channel">Booking Channel</span></label>
+                            <select id="book-channel" class="select-filter input-field">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-grid-full customer-only" style="border-bottom: 1px solid var(--border-color); margin: 8px 0;"></div>
+                        
+                        <!-- Service & Time -->
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-service"><span data-i18n="form_service">Service Type</span></label>
+                            <select id="book-service" class="select-filter input-field" onchange="onServiceChanged()">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="book-duration"><span data-i18n="form_duration">Duration (Minutes)</span></label>
+                            <input type="number" id="book-duration" class="input-field" placeholder="e.g. 60, 90, 120" min="5" oninput="calculateEndTime()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="book-date"><span data-i18n="form_date">Service Date</span></label>
+                            <input type="date" id="book-date" class="input-field" onchange="checkConflicts(); updateRoomScheduleHint(); updateTherapistScheduleHint();">
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-booking-date"><span data-i18n="form_booking_date">Booking Made Date</span></label>
+                            <input type="date" id="book-booking-date" class="input-field">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="book-time-in"><span data-i18n="form_time_in">Time In (HH:MM)</span></label>
+                            <input type="time" id="book-time-in" class="input-field" onchange="calculateEndTime(); checkConflicts();">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="book-time-out" data-i18n="form_time_out">Time Out (Calculated)</label>
+                            <input type="text" id="book-time-out" class="input-field" readonly style="background-color: var(--bg-primary); cursor: not-allowed;">
+                        </div>
+                        
+                        <div class="form-grid-full customer-only" style="border-bottom: 1px solid var(--border-color); margin: 8px 0;"></div>
+                        
+                        <!-- Assignments & Resource Details -->
+                        <div class="form-group">
+                            <label class="form-label" for="book-room"><span data-i18n="form_room">Assigned Room</span></label>
+                            <div style="display: flex; gap: 8px;">
+                                <select id="book-room" class="select-filter input-field" onchange="checkConflicts(); updateRoomScheduleHint();" style="flex-grow: 1;">
+                                    <!-- Populated dynamically -->
+                                </select>
+                                <button type="button" class="btn btn-secondary" onclick="quickAdd('rooms')" style="padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem;" title="Quick Add Room">+</button>
+                            </div>
+                            <div id="room-schedule-hint" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: none; padding: 4px 8px; background-color: var(--bg-primary); border-radius: 4px; border: 1px solid var(--border-color);"></div>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-room-prep" data-i18n="form_room_prep">Room Setup Status</label>
+                            <select id="book-room-prep" class="select-filter input-field">
+                                <option value="ការៀបចំបន្ទប់">Cleaned & Prep (ការៀបចំបន្ទប់)</option>
+                                <option value="រៀបចំរួច">Ready (រៀបចំរួច)</option>
+                                <option value="មិនទាន់រៀបចំ">Needs Prep (មិនទាន់រៀបចំ)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-booked-staff" data-i18n="form_booked_staff">Requested Staff (កក់បុគ្លិក)</label>
+                            <select id="book-booked-staff" class="select-filter input-field">
+                                <option value="">-- No Request --</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-staff"><span data-i18n="form_staff">Therapist (គ្រូម៉ាស្សា)</span></label>
+                            <div style="display: flex; gap: 8px;">
+                                <select id="book-staff" class="select-filter input-field" onchange="checkConflicts(); updateTherapistScheduleHint();" style="flex-grow: 1;">
+                                    <!-- Populated dynamically -->
+                                </select>
+                                <button type="button" class="btn btn-secondary" onclick="quickAdd('staff')" style="padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.25rem;" title="Quick Add Therapist">+</button>
+                            </div>
+                            <div id="therapist-schedule-hint" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: none; padding: 4px 8px; background-color: var(--bg-primary); border-radius: 4px; border: 1px solid var(--border-color);"></div>
+                        </div>
+                        
+                        <div class="form-grid-full customer-only" style="border-bottom: 1px solid var(--border-color); margin: 8px 0;"></div>
+                        
+                        <!-- Financials & Client Status -->
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-payment"><span data-i18n="form_payment">Payment Status</span></label>
+                            <select id="book-payment" class="select-filter input-field">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-discount" data-i18n="form_discount">Discount</label>
+                            <select id="book-discount" class="select-filter input-field">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-status"><span data-i18n="form_status">Client Status</span></label>
+                            <select id="book-status" class="select-filter input-field">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group customer-only">
+                            <label class="form-label" for="book-booking-status"><span data-i18n="form_booking_status">Booking Status</span></label>
+                            <select id="book-booking-status" class="select-filter input-field">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeBookingModal()" data-i18n="btn_cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="btn-save-booking" data-i18n="btn_save">Save Appointment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast notifications panel -->
+    <div class="toast-container" id="toast-container"></div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
