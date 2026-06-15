@@ -5507,7 +5507,21 @@ async function pullFromGoogleSheet() {
         }
         
         // Merge bookings and configs
-        if (data.bookings) state.bookings = data.bookings;
+        if (data.bookings) {
+            data.bookings.forEach((b, idx) => {
+                // Ensure every booking has a unique ID (in case it was loaded without one from Google Sheets)
+                if (!b.id) {
+                    b.id = "gs-" + Date.now() + "-" + idx;
+                }
+                if (b.date && b.date.includes("T")) {
+                    b.date = b.date.split("T")[0];
+                }
+                if (b.bookingDate && b.bookingDate.includes("T")) {
+                    b.bookingDate = b.bookingDate.split("T")[0];
+                }
+            });
+            state.bookings = data.bookings;
+        }
         if (data.staff && data.staff.length > 0) state.staff = data.staff;
         if (data.rooms && data.rooms.length > 0) state.rooms = data.rooms;
         if (data.services && data.services.length > 0) state.services = data.services;
