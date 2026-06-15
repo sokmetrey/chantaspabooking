@@ -5495,6 +5495,17 @@ async function pullFromGoogleSheet() {
         if (!response.ok) throw new Error("Server returned status " + response.status);
         const data = await response.json();
         
+        // If the Google Sheet is brand new and completely empty, push our local database to it first
+        const isSheetEmpty = (!data.bookings || data.bookings.length === 0) &&
+                             (!data.staff || data.staff.length === 0) &&
+                             (!data.rooms || data.rooms.length === 0);
+                             
+        if (isSheetEmpty) {
+            console.log("Google Sheet is empty, initializing it with local data...");
+            await pushToGoogleSheet();
+            return;
+        }
+        
         // Merge bookings and configs
         if (data.bookings) state.bookings = data.bookings;
         if (data.staff && data.staff.length > 0) state.staff = data.staff;
