@@ -53,6 +53,7 @@ const I18N = {
         btn_add: "Add",
         btn_cancel: "Cancel",
         btn_save: "Save Appointment",
+        btn_delete: "Delete Booking",
         modal_booking_title_add: "Create New Appointment",
         modal_booking_title_edit: "Edit Appointment Details",
         form_client_name: "Client Name",
@@ -238,6 +239,7 @@ const I18N = {
         btn_add: "បន្ថែម",
         btn_cancel: "បោះបង់",
         btn_save: "រក្សាទុកការកក់",
+        btn_delete: "លុបការកក់",
         modal_booking_title_add: "បង្កើតការកក់ភ្ញៀវថ្មី",
         modal_booking_title_edit: "កែសម្រួលព័ត៌មានការកក់",
         form_client_name: "ឈ្មោះភ្ញៀវ",
@@ -2754,6 +2756,8 @@ function openBookingModal(bookingId = null) {
     if (bookingId) {
         // Edit Mode
         document.getElementById("modal-booking-title").setAttribute("data-i18n", "modal_booking_title_edit");
+        const deleteBtn = document.getElementById("btn-delete-booking");
+        if (deleteBtn) deleteBtn.style.display = "inline-flex";
         
         if (booking) {
             document.getElementById("booking-id").value = booking.id;
@@ -2786,6 +2790,8 @@ function openBookingModal(bookingId = null) {
         // Add Mode
         document.getElementById("modal-booking-title").setAttribute("data-i18n", "modal_booking_title_add");
         document.getElementById("booking-id").value = "";
+        const deleteBtn = document.getElementById("btn-delete-booking");
+        if (deleteBtn) deleteBtn.style.display = "none";
         document.getElementById("book-is-block").checked = false;
         
         // Auto-fill dates with today
@@ -3149,6 +3155,14 @@ function deleteBooking(bookingId) {
         saveToLocalStorage();
         showToast("Booking deleted.", "warning");
         renderAllViews();
+    }
+}
+
+function handleModalDeleteBooking() {
+    const activeId = document.getElementById("booking-id").value;
+    if (activeId) {
+        closeBookingModal();
+        deleteBooking(activeId);
     }
 }
 

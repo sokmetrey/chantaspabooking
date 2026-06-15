@@ -836,7 +836,8 @@
                         </div>
                     </div>
                     
-                    <div class="modal-footer">
+                    <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button type="button" class="btn btn-danger" id="btn-delete-booking" onclick="handleModalDeleteBooking()" style="display: none; margin-right: auto;" data-i18n="btn_delete">Delete Booking</button>
                         <button type="button" class="btn btn-secondary" onclick="closeBookingModal()" data-i18n="btn_cancel">Cancel</button>
                         <button type="submit" class="btn btn-primary" id="btn-save-booking" data-i18n="btn_save">Save Appointment</button>
                     </div>
