@@ -103,6 +103,9 @@ const I18N = {
         set_tab_clientStatuses: "Client Status Setup",
         set_tab_discounts: "Discount Options",
         set_tab_data: "Database & Backups",
+        set_data_gs_title: "Google Sheets Synchronization",
+        set_data_gs_desc: "Expose your database to a shared Google Sheet. Enter your Google Apps Script Web App URL below to sync bookings in real-time.",
+        btn_save_gs: "Connect",
         set_tab_brand: "Logo & Branding",
         set_brand_title: "Logo & Branding",
         set_brand_desc: "Upload and manage your custom spa logo. Persistent in browser storage.",
@@ -285,6 +288,9 @@ const I18N = {
         set_tab_clientStatuses: "ស្ថានភាពភ្ញៀវ",
         set_tab_discounts: "ជម្រើសបញ្ចុះតម្លៃ",
         set_tab_data: "ទិន្នន័យ & ការចម្លងទុក",
+        set_data_gs_title: "សមកាលកម្ម Google Sheets",
+        set_data_gs_desc: "ចែករំលែកទិន្នន័យរបស់អ្នកទៅកាន់ Google Sheet។ បញ្ចូលតំណភ្ជាប់ Google Apps Script Web App URL ខាងក្រោមដើម្បីសមកាលកម្មការកក់ភ្លាមៗ។",
+        btn_save_gs: "ភ្ជាប់",
         set_tab_brand: "ឡូហ្គោ & ម៉ាកយីហោ",
         set_brand_title: "ឡូហ្គោ & ម៉ាកយីហោ",
         set_brand_desc: "ផ្ទុកឡើង និងគ្រប់គ្រងឡូហ្គោផ្ទាល់ខ្លួនរបស់អ្នក។ រក្សាទុកក្នុងកម្មវិធីរុករករបស់អ្នក។",
@@ -467,6 +473,11 @@ window.onload = function() {
     translatePage();
     renderAllViews();
     initTimeOutNotifications();
+    
+    if (state.googleSheetUrl) {
+        updateGoogleSheetUI();
+        pullFromGoogleSheet();
+    }
 };
 
 function initDatabase() {
@@ -487,6 +498,7 @@ function initDatabase() {
     const savedCustomColumnLabels = localStorage.getItem("spa_custom_column_labels");
     const savedColumnWidths = localStorage.getItem("spa_column_widths");
 
+    state.googleSheetUrl = localStorage.getItem("spa_google_sheet_url") || "";
     if (savedLang) state.currentLang = savedLang;
     state.theme = savedTheme || "dark";
     state.customLogo = savedLogo || "";
@@ -830,6 +842,10 @@ function saveToLocalStorage() {
         localStorage.setItem("spa_logo", state.customLogo);
     } else {
         localStorage.removeItem("spa_logo");
+    }
+    
+    if (state.googleSheetUrl) {
+        pushToGoogleSheet();
     }
 }
 
@@ -5469,5 +5485,196 @@ function renderUnavailabilityReport(container, bookings) {
     `;
     container.innerHTML = html;
 }
+
+// --- Google Sheets Cloud Sync Modules ---
+async function pullFromGoogleSheet() {
+    if (!state.googleSheetUrl) return;
+    setGoogleSheetSyncStatus("syncing");
+    try {
+        const response = await fetch(state.googleSheetUrl);
+        if (!response.ok) throw new Error("Server returned status " + response.status);
+        const data = await response.json();
+        
+        // Merge bookings and configs
+        if (data.bookings) state.bookings = data.bookings;
+        if (data.staff && data.staff.length > 0) state.staff = data.staff;
+        if (data.rooms && data.rooms.length > 0) state.rooms = data.rooms;
+        if (data.services && data.services.length > 0) state.services = data.services;
+        if (data.settings) {
+            if (data.settings.channels) state.channels = data.settings.channels;
+            if (data.settings.payments) state.payments = data.settings.payments;
+            if (data.settings.clientStatuses) state.clientStatuses = data.settings.clientStatuses;
+            if (data.settings.discounts) state.discounts = data.settings.discounts;
+            if (data.settings.bookingStatuses) state.bookingStatuses = data.settings.bookingStatuses;
+            if (data.settings.tableTitle) state.tableTitle = data.settings.tableTitle;
+            if (data.settings.customColumnLabels) state.customColumnLabels = data.settings.customColumnLabels;
+            if (data.settings.columnWidths) state.columnWidths = data.settings.columnWidths;
+            if (data.settings.customLogo) state.customLogo = data.settings.customLogo;
+            if (data.settings.theme) {
+                state.theme = data.settings.theme;
+                document.body.setAttribute("data-theme", state.theme);
+                updateThemeIcons();
+            }
+        }
+        
+        // Save locally for cache/offline
+        localStorage.setItem("spa_bookings", JSON.stringify(state.bookings));
+        localStorage.setItem("spa_rooms", JSON.stringify(state.rooms));
+        localStorage.setItem("spa_staff", JSON.stringify(state.staff));
+        localStorage.setItem("spa_services", JSON.stringify(state.services));
+        localStorage.setItem("spa_payments", JSON.stringify(state.payments));
+        localStorage.setItem("spa_client_statuses", JSON.stringify(state.clientStatuses));
+        localStorage.setItem("spa_discounts", JSON.stringify(state.discounts));
+        localStorage.setItem("spa_booking_statuses", JSON.stringify(state.bookingStatuses));
+        localStorage.setItem("spa_channels", JSON.stringify(state.channels));
+        localStorage.setItem("spa_theme", state.theme);
+        localStorage.setItem("spa_table_title", state.tableTitle);
+        localStorage.setItem("spa_custom_column_labels", JSON.stringify(state.customColumnLabels));
+        localStorage.setItem("spa_column_widths", JSON.stringify(state.columnWidths));
+        if (state.customLogo) {
+            localStorage.setItem("spa_logo", state.customLogo);
+        } else {
+            localStorage.removeItem("spa_logo");
+        }
+        
+        renderAllViews();
+        setGoogleSheetSyncStatus("success");
+    } catch (err) {
+        console.error("Failed to pull from Google Sheets:", err);
+        setGoogleSheetSyncStatus("error");
+    }
+}
+
+async function pushToGoogleSheet() {
+    if (!state.googleSheetUrl) return;
+    setGoogleSheetSyncStatus("syncing");
+    try {
+        const payload = {
+            bookings: state.bookings,
+            staff: state.staff,
+            rooms: state.rooms,
+            services: state.services,
+            settings: {
+                channels: state.channels,
+                payments: state.payments,
+                clientStatuses: state.clientStatuses,
+                discounts: state.discounts,
+                bookingStatuses: state.bookingStatuses,
+                tableTitle: state.tableTitle,
+                customColumnLabels: state.customColumnLabels,
+                columnWidths: state.columnWidths,
+                customLogo: state.customLogo,
+                theme: state.theme
+            }
+        };
+        
+        const response = await fetch(state.googleSheetUrl, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if (!response.ok) throw new Error("HTTP error " + response.status);
+        const result = await response.json();
+        if (result.status === "success") {
+            setGoogleSheetSyncStatus("success");
+        } else {
+            throw new Error(result.message || "Unknown error from Apps Script");
+        }
+    } catch (err) {
+        console.error("Failed to push to Google Sheets:", err);
+        setGoogleSheetSyncStatus("error");
+    }
+}
+
+function updateGoogleSheetUI() {
+    const btn = document.getElementById("gs-sync-button");
+    const input = document.getElementById("google-sheet-url-input");
+    const statusText = document.getElementById("gs-connection-status");
+    
+    if (btn) {
+        btn.style.display = state.googleSheetUrl ? "flex" : "none";
+    }
+    if (input) {
+        input.value = state.googleSheetUrl;
+    }
+    if (statusText) {
+        if (state.googleSheetUrl) {
+            statusText.style.display = "block";
+            statusText.style.color = "var(--text-secondary)";
+            statusText.textContent = state.currentLang === 'en' ? "Status: Connected" : "ស្ថានភាព៖ បានភ្ជាប់";
+        } else {
+            statusText.style.display = "none";
+        }
+    }
+}
+
+function setGoogleSheetSyncStatus(status) {
+    const dot = document.getElementById("gs-sync-indicator");
+    const icon = document.getElementById("gs-sync-icon");
+    const statusText = document.getElementById("gs-connection-status");
+    const btn = document.getElementById("gs-sync-button");
+    
+    if (!dot || !icon) return;
+    
+    if (status === "syncing") {
+        dot.style.backgroundColor = "var(--accent-gold)";
+        icon.classList.add("spin-anim");
+        if (btn) btn.title = state.currentLang === 'en' ? "Syncing..." : "កំពុងសមកាលកម្ម...";
+    } else if (status === "success") {
+        dot.style.backgroundColor = "#10b981";
+        icon.classList.remove("spin-anim");
+        if (btn) btn.title = state.currentLang === 'en' ? "Connected & Synced (Click to sync now)" : "បានភ្ជាប់ និងសមកាលកម្ម (ចុចដើម្បីសមកាលកម្មឡើងវិញ)";
+        if (statusText) {
+            statusText.style.color = "#10b981";
+            statusText.textContent = state.currentLang === 'en' ? "Status: Synced successfully" : "ស្ថានភាព៖ បានសមកាលកម្មជោគជ័យ";
+        }
+    } else if (status === "error") {
+        dot.style.backgroundColor = "#ef4444";
+        icon.classList.remove("spin-anim");
+        if (btn) btn.title = state.currentLang === 'en' ? "Sync Error! Click to try again" : "កំហុសសមកាលកម្ម! ចុចដើម្បីព្យាយាមម្តងទៀត";
+        if (statusText) {
+            statusText.style.color = "#ef4444";
+            statusText.textContent = state.currentLang === 'en' ? "Status: Sync failed! Check URL." : "ស្ថានភាព៖ បរាជ័យសមកាលកម្ម! ពិនិត្យមើល URL។";
+        }
+    }
+}
+
+function saveGoogleSheetUrl() {
+    const urlInput = document.getElementById("google-sheet-url-input");
+    if (!urlInput) return;
+    
+    const url = urlInput.value.trim();
+    if (url === "") {
+        state.googleSheetUrl = "";
+        localStorage.removeItem("spa_google_sheet_url");
+        updateGoogleSheetUI();
+        showToast(state.currentLang === 'en' ? "Google Sheet disconnected." : "បានផ្តាច់ទំនាក់ទំនង Google Sheet។", "warning");
+        return;
+    }
+    
+    if (!url.startsWith("https://script.google.com/")) {
+        showToast(state.currentLang === 'en' ? "Invalid URL. Please enter a Google Apps Script web app link." : "តំណភ្ជាប់មិនត្រឹមត្រូវ។ សូមបញ្ចូលតំណភ្ជាប់ Google Apps Script web app។", "error");
+        return;
+    }
+    
+    state.googleSheetUrl = url;
+    localStorage.setItem("spa_google_sheet_url", url);
+    updateGoogleSheetUI();
+    showToast(state.currentLang === 'en' ? "Connecting to Google Sheets..." : "កំពុងភ្ជាប់ទៅកាន់ Google Sheets...", "info");
+    
+    pullFromGoogleSheet();
+}
+
+function triggerGoogleSheetSync() {
+    if (state.googleSheetUrl) {
+        showToast(state.currentLang === 'en' ? "Synchronizing with Google Sheets..." : "កំពុងសមកាលកម្មជាមួយ Google Sheets...", "info");
+        pullFromGoogleSheet();
+    }
+}
+
 
 

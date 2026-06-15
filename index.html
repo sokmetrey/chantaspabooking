@@ -73,6 +73,15 @@
             <header class="top-header">
                 <div class="page-title" id="current-view-title" data-i18n="title_dashboard">Dashboard Overview</div>
                 <div class="header-actions">
+                    <!-- Google Sheets Sync Button & Indicator -->
+                    <button class="btn btn-secondary" id="gs-sync-button" onclick="triggerGoogleSheetSync()" style="padding: 0; width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border-radius: 50%; position: relative;" title="Sync with Google Sheets">
+                        <!-- Sync / Refresh Icon -->
+                        <svg id="gs-sync-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        <!-- Connected indicator dot -->
+                        <span id="gs-sync-indicator" style="position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--bg-secondary); background-color: var(--color-danger);"></span>
+                    </button>
                     <!-- Theme Toggle Switch -->
                     <button class="btn btn-secondary" id="theme-toggle" onclick="toggleTheme()" style="padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;" title="Toggle Day/Night mode">
                         <!-- Sun Icon for Light mode -->
@@ -419,6 +428,18 @@
                             <p class="settings-description" data-i18n="set_data_desc">Backup the system, restore to defaults, or load synthetic sample data.</p>
                             
                             <div style="display: flex; flex-direction: column; gap: 16px;">
+                                <!-- Google Sheets Sync Block -->
+                                <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px;">
+                                    <div>
+                                        <h4 style="font-weight: 600; margin-bottom: 4px;" data-i18n="set_data_gs_title">Google Sheets Synchronization</h4>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);" data-i18n="set_data_gs_desc">Expose your database to a shared Google Sheet. Enter your Google Apps Script Web App URL below to sync bookings in real-time.</p>
+                                    </div>
+                                    <div style="display: flex; gap: 8px; width: 100%;">
+                                        <input type="url" id="google-sheet-url-input" class="input-field" placeholder="https://script.google.com/macros/s/.../exec" style="flex-grow: 1;">
+                                        <button class="btn btn-primary" onclick="saveGoogleSheetUrl()" data-i18n="btn_save_gs" style="white-space: nowrap;">Connect</button>
+                                    </div>
+                                    <div id="gs-connection-status" style="font-size: 0.8rem; font-weight: 500; display: none;"></div>
+                                </div>
                                 <div style="background-color: var(--bg-tertiary); padding: 16px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <h4 style="font-weight: 600; margin-bottom: 4px;" data-i18n="set_data_demo_title">Preload Demo Bookings</h4>

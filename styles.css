@@ -1691,7 +1691,10 @@ select.grid-inline-select.badge-booking-booked {
     }
 }
 
-
-
-
-
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spin-anim {
+    animation: spin 1s linear infinite;
+}
