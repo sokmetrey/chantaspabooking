@@ -444,7 +444,7 @@ function checkTimeOutNotifications() {
     
     // Clean up bookings in set that are updated to future timeout or different dates
     notifiedTimeOuts.forEach(id => {
-        const b = state.bookings.find(bk => bk.id === id);
+        const b = state.bookings.find(bk => String(bk.id) === String(id));
         if (!b || b.date !== todayISO || timeToMinutes(b.timeOut) > nowMins) {
             notifiedTimeOuts.delete(id);
         }
@@ -2749,7 +2749,7 @@ function openBookingModal(bookingId = null) {
     
     let booking = null;
     if (bookingId) {
-        booking = state.bookings.find(b => b.id === bookingId);
+        booking = state.bookings.find(b => String(b.id) === String(bookingId));
     }
     populateFormDropdowns(booking);
     
@@ -2898,7 +2898,7 @@ function getBookingConflictMessage(bData) {
     
     // Scan all bookings for room conflicts
     for (const b of state.bookings) {
-        if (b.id === bookingId) continue; // skip self
+        if (String(b.id) === String(bookingId)) continue; // skip self
         if (b.date !== date) continue; // skip different dates
         
         if (isOverlapping(timeIn, timeOut, b.timeIn, b.timeOut)) {
@@ -2943,7 +2943,7 @@ function getBookingConflictMessage(bData) {
     
     // Scan all bookings for therapist conflicts
     for (const b of state.bookings) {
-        if (b.id === bookingId) continue;
+        if (String(b.id) === String(bookingId)) continue;
         if (b.date !== date) continue;
         
         if (isOverlapping(timeIn, timeOut, b.timeIn, b.timeOut)) {
@@ -3025,7 +3025,7 @@ function handleInlineFieldChange(bookingId, selectEl) {
 
 // Scrape inline changes, compute timeout, check conflicts and save row to localStorage
 function saveRowBooking(bookingId) {
-    const booking = state.bookings.find(b => b.id === bookingId);
+    const booking = state.bookings.find(b => String(b.id) === String(bookingId));
     if (!booking) {
         showToast("Booking not found", "error");
         return;
@@ -3059,7 +3059,7 @@ function saveRowBooking(bookingId) {
     }
     
     // Save to state and update views
-    const idx = state.bookings.findIndex(b => b.id === bookingId);
+    const idx = state.bookings.findIndex(b => String(b.id) === String(bookingId));
     if (idx !== -1) {
         state.bookings[idx] = updatedBooking;
         saveToLocalStorage();
@@ -3129,7 +3129,7 @@ function saveBooking(event) {
     
     if (bookingId) {
         // Edit Mode
-        const idx = state.bookings.findIndex(b => b.id === bookingId);
+        const idx = state.bookings.findIndex(b => String(b.id) === String(bookingId));
         if (idx !== -1) {
             state.bookings[idx] = bookingData;
             showToast("Appointment updated successfully!", "success");
@@ -3151,7 +3151,7 @@ function deleteBooking(bookingId) {
         "តើអ្នកពិតជាចង់លុបការកក់នេះមែនទេ?";
         
     if (confirm(confirmMsg)) {
-        state.bookings = state.bookings.filter(b => b.id !== bookingId);
+        state.bookings = state.bookings.filter(b => String(b.id) !== String(bookingId));
         saveToLocalStorage();
         showToast("Booking deleted.", "warning");
         renderAllViews();
